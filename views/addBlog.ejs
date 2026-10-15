@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head.ejs') %>
+    <title>Add new Blog</title>
+    <!-- Quill Rich Text Editor -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.snow.css" rel="stylesheet" />
+    <style>
+        .add-blog-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+            margin: 2rem 0;
+        }
+
+        .add-blog-container h1 {
+            color: #2d3748;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .add-blog-container h1 i {
+            color: #667eea;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #2d3748;
+            display: block;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .form-control {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.25s ease;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .editor-label {
+            font-weight: 600;
+            color: #2d3748;
+            display: block;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        #editor {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            min-height: 350px;
+        }
+
+        .ql-container {
+            font-size: 0.95rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        .ql-toolbar {
+            border: none;
+            border-bottom: 2px solid #e2e8f0;
+            border-radius: 8px 8px 0 0;
+            background: #f7f9fb;
+        }
+
+        .ql-toolbar button:hover,
+        .ql-toolbar button:focus,
+        .ql-toolbar button.ql-active {
+            color: #667eea;
+        }
+
+        .ql-toolbar.ql-snow .ql-picker-label {
+            color: #2d3748;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .file-preview {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: #f7f9fb;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        @media (max-width: 768px) {
+            .add-blog-container {
+                padding: 1.5rem;
+                margin: 1rem 0;
+            }
+
+            #editor {
+                min-height: 250px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn-submit {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('./partials/nav.ejs') %>
+    
+    <div class="container">
+        <div class="add-blog-container">
+            <h1>
+                <i class="bi bi-pencil-fill"></i> Create New Blog
+            </h1>
+
+                        <% if (typeof error !== 'undefined' && error) { %>
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                <%= error %>
+                            </div>
+                        <% } %>
+
+            <form action="/blog" method="post" enctype="multipart/form-data">
+                <!-- Title Field -->
+                <div class="form-group">
+                    <label for="title" class="form-label">
+                        <i class="bi bi-heading"></i> Blog Title
+                    </label>
+                    <input type="text" class="form-control" id="title" name="title" placeholder="Enter an engaging title..." required>
+                </div>
+
+                <!-- Cover Image Field -->
+                <div class="form-group">
+                    <label for="coverImage" class="form-label">
+                        <i class="bi bi-image"></i> Cover Image
+                    </label>
+                    <input type="file" class="form-control" id="coverImage" name="coverImage" accept="image/*" required>
+                    <div class="file-preview">Choose an attractive cover image for your blog</div>
+                </div>
+
+                <!-- Rich Text Editor -->
+                <div class="form-group">
+                    <label class="editor-label">
+                        <i class="bi bi-file-text"></i> Blog Content
+                    </label>
+                    <div id="editor"></div>
+                    <textarea name="body" id="content" style="display:none;"></textarea>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">
+                        <i class="bi bi-check-circle"></i> Publish Blog
+                    </button>
+                    <a href="/" class="btn btn-outline-secondary" style="padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600;">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.js"></script>
+    <script>
+        const quill = new Quill('#editor', {
+            theme: 'snow',
+            placeholder: 'Write your blog content here... You can use formatting tools above!',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['blockquote', 'code-block'],
+                    [{ 'header': 1 }, { 'header': 2 }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'script': 'sub'}, { 'script': 'super' }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    ['link', 'image'],
+                    ['clean']
+                ]
+            }
+        });
+
+        // Set content to hidden textarea before form submission
+        document.querySelector('form').addEventListener('submit', function() {
+            const content = quill.root.innerHTML;
+            document.getElementById('content').value = content;
+        });
+    </script>
+
+    <%- include('./partials/scripts.ejs') %>
+</body>
+
+</html>
